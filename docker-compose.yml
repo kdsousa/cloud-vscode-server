@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  vscode:
+    image: vscode-dev-image:latest
+    container_name: vscode-dev
+    restart: unless-stopped
+    volumes:
+      # Mapeia a pasta de projetos no host (/home/ubuntu/meus-projetos) para o WORKDIR do container
+      - /home/ubuntu/meus-projetos:/home/ubuntu/notebooks
+      # Volumes nomeados para persistir extensões e configurações do VS Code
+      - vscode-data:/home/ubuntu/.local/share/code-server
+      - vscode-config:/home/ubuntu/.config/code-server
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vscode.rule=Host(`vscode.keplo.com.br`)"
+      - "traefik.http.routers.vscode.entrypoints=websecure"
+      - "traefik.http.routers.vscode.tls.certresolver=myresolver"
+      - "traefik.http.services.vscode.loadbalancer.server.port=8080"
+
+volumes:
+  vscode-data:
+    name: vscode-data-persistent
+  vscode-config:
+    name: vscode-config-persistent
+
+networks:
+  # Utiliza a rede gerenciada pelo repositório cloud-traefik-gateway
+  traefik:
+    external: true

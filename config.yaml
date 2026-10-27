@@ -1,0 +1,4 @@
+bind-addr: 0.0.0.0:8080
+auth: none # (none) or (password)
+# password: sua senha 
+cert: false
